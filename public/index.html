@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat App</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      #messages {
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        background-color: white;
+      }
+    </style>
+  </head>
+  <body class="d-flex flex-column align-items-center bg-light py-5">
+    <h1 class="mb-4">EchoChat</h1>
+
+    <div id="messages" class="w-50 mb-3"></div>
+
+    <div class="input-group w-50">
+      <input
+        type="text"
+        id="message"
+        class="form-control"
+        placeholder="Enter Message"
+      />
+      <div class="input-group-append">
+        <button id="sendBtn" class="btn btn-primary">Send</button>
+      </div>
+    </div>
+
+    <!-- Socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const sendBtn = document.getElementById("sendBtn");
+      const messageInput = document.getElementById("message");
+      const allMessages = document.getElementById("messages");
+
+      socket.on("message", (message) => {
+        const p = document.createElement("p");
+        p.className = "mb-1";
+        p.innerText = message;
+        allMessages.appendChild(p);
+        allMessages.scrollTop = allMessages.scrollHeight; // Auto-scroll to the latest message
+      });
+
+      sendBtn.addEventListener("click", () => {
+        const message = messageInput.value;
+        if (message) {
+          socket.emit("user-message", message);
+          messageInput.value = ''; // Clear the input field after sending
+        }
+      });
+
+      // // Allow pressing Enter to send the message
+      // messageInput.addEventListener("keypress", (e) => {
+      //   if (e.key === "Enter") {
+      //     sendBtn.click();
+      //   }
+      // });
+    </script>
+  </body>
+</html>
